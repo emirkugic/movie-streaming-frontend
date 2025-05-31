@@ -1,0 +1,144 @@
+.hero-slider {
+	position: relative;
+	height: 70vh;
+	min-height: 500px;
+	max-height: 800px;
+	width: 100%;
+	overflow: hidden;
+
+	&__backdrop {
+		position: absolute;
+		top: 0;
+		left: 0;
+		width: 100%;
+		height: 100%;
+		background-size: cover;
+		background-position: center;
+		background-repeat: no-repeat;
+		transition: opacity 0.5s ease;
+	}
+
+	&__overlay {
+		position: absolute;
+		top: 0;
+		left: 0;
+		width: 100%;
+		height: 100%;
+		background: linear-gradient(
+			to bottom,
+			rgba(0, 0, 0, 0.8) 0%,
+			rgba(0, 0, 0, 0.5) 60%,
+			rgba(0, 0, 0, 0.8) 100%
+		);
+	}
+
+	&__content {
+		position: relative;
+		z-index: 2;
+		max-width: 600px;
+		padding: 0 2rem;
+		margin: 0 auto;
+		height: 100%;
+		display: flex;
+		flex-direction: column;
+		justify-content: center;
+		text-align: center;
+
+		@media (min-width: 768px) {
+			text-align: left;
+			margin: 0 10%;
+		}
+	}
+
+	&__title {
+		font-size: 2.5rem;
+		font-weight: 700;
+		margin-bottom: 1rem;
+		text-shadow: 0 2px 4px rgba(0, 0, 0, 0.5);
+
+		@media (min-width: 768px) {
+			font-size: 3.5rem;
+		}
+	}
+
+	&__year {
+		font-size: 1.2rem;
+		color: var(--gray-light);
+		margin-bottom: 1rem;
+	}
+
+	&__overview {
+		font-size: 1rem;
+		margin-bottom: 2rem;
+		text-shadow: 0 1px 2px rgba(0, 0, 0, 0.5);
+		display: -webkit-box;
+		-webkit-line-clamp: 3;
+		-webkit-box-orient: vertical;
+		overflow: hidden;
+	}
+
+	&__actions {
+		display: flex;
+		gap: 1rem;
+		justify-content: center;
+
+		@media (min-width: 768px) {
+			justify-content: flex-start;
+		}
+	}
+
+	&__play-btn,
+	&__info-btn {
+		display: flex;
+		align-items: center;
+		gap: 0.5rem;
+		padding: 0.75rem 1.5rem;
+		border-radius: 4px;
+		font-weight: 500;
+		transition: all 0.2s ease;
+	}
+
+	&__play-btn {
+		background-color: var(--primary-color);
+		color: var(--text-color);
+
+		&:hover {
+			background-color: darken(#e50914, 10%);
+		}
+	}
+
+	&__info-btn {
+		background-color: rgba(109, 109, 110, 0.7);
+		color: var(--text-color);
+
+		&:hover {
+			background-color: rgba(109, 109, 110, 0.9);
+		}
+	}
+
+	&__indicators {
+		position: absolute;
+		bottom: 2rem;
+		left: 0;
+		width: 100%;
+		display: flex;
+		justify-content: center;
+		gap: 0.75rem;
+		z-index: 2;
+	}
+
+	&__indicator {
+		width: 10px;
+		height: 10px;
+		border-radius: 50%;
+		background-color: rgba(255, 255, 255, 0.3);
+		border: none;
+		cursor: pointer;
+		transition: all 0.2s ease;
+
+		&.active,
+		&:hover {
+			background-color: var(--text-color);
+		}
+	}
+}

@@ -1,0 +1,54 @@
+.home-page {
+	&__hero {
+		margin-bottom: 3rem;
+	}
+
+	&__trending-movies,
+	&__trending-tv-shows {
+		padding: 2rem;
+		max-width: 1400px;
+		margin: 0 auto;
+
+		.section-header {
+			display: flex;
+			justify-content: space-between;
+			align-items: center;
+			margin-bottom: 1.5rem;
+
+			h2 {
+				font-size: 1.5rem;
+				font-weight: 700;
+			}
+
+			&__link {
+				color: var(--gray);
+				font-size: 0.9rem;
+				transition: color 0.2s ease;
+
+				&:hover {
+					color: var(--text-color);
+					text-decoration: underline;
+				}
+			}
+		}
+	}
+
+	&__trending-tv-shows {
+		margin-bottom: 3rem;
+	}
+}
+
+@media (max-width: 768px) {
+	.home-page {
+		&__trending-movies,
+		&__trending-tv-shows {
+			padding: 1.5rem;
+
+			.section-header {
+				h2 {
+					font-size: 1.3rem;
+				}
+			}
+		}
+	}
+}
