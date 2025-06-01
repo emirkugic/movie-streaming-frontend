@@ -1,5 +1,6 @@
+// src/pages/MoviePage.js - FINAL FIX
 import React, { useEffect, useState } from "react";
-import { useParams } from "react-router-dom";
+import { useParams, Link } from "react-router-dom";
 import { useDispatch, useSelector } from "react-redux";
 import { fetchMovieDetails, clearMovieDetails } from "../store/moviesSlice";
 import { FaStar, FaPlus, FaHeart, FaRegHeart, FaCheck } from "react-icons/fa";
@@ -9,29 +10,36 @@ import {
 	addToFavorites,
 	removeFromFavorites,
 } from "../store/userSlice";
-import VideoPlayer from "../components/common/VideoPlayer";
 import MediaGrid from "../components/common/MediaGrid";
 import Loader from "../components/common/Loader";
 import "../assets/styles/MoviePage.scss";
 
 const MoviePage = () => {
+	// Get movie slug from URL
 	const { slug } = useParams();
 	const dispatch = useDispatch();
 	const { currentMovie, loading } = useSelector((state) => state.movies);
 	const { isAuthenticated } = useSelector((state) => state.auth);
 
+	// Local state
+	const [source, setSource] = useState("vidsrc"); // vidsrc is default
 	const [inWatchlist, setInWatchlist] = useState(false);
 	const [inFavorites, setInFavorites] = useState(false);
 
+	// Fetch movie details when component mounts
 	useEffect(() => {
 		dispatch(fetchMovieDetails(slug));
 
+		// Log for debugging
+		console.log("Fetching movie details:", { slug });
+
+		// Cleanup function
 		return () => {
 			dispatch(clearMovieDetails());
 		};
 	}, [dispatch, slug]);
 
-	// Check if movie is in watchlist/favorites
+	// Handle watchlist and favorites when movie data is loaded
 	useEffect(() => {
 		if (isAuthenticated && currentMovie) {
 			// In a real app, you'd make API calls to check these
@@ -40,6 +48,7 @@ const MoviePage = () => {
 		}
 	}, [isAuthenticated, currentMovie]);
 
+	// Handle watchlist toggle
 	const handleWatchlistToggle = () => {
 		if (!isAuthenticated || !currentMovie) return;
 
@@ -52,6 +61,7 @@ const MoviePage = () => {
 		}
 	};
 
+	// Handle favorites toggle
 	const handleFavoritesToggle = () => {
 		if (!isAuthenticated || !currentMovie) return;
 
@@ -64,30 +74,90 @@ const MoviePage = () => {
 		}
 	};
 
-	if (loading || !currentMovie) {
+	// Show loading indicator while data is loading
+	if (loading) {
 		return <Loader />;
 	}
 
+	// Get movie ID and other details
+	let movieId = null;
+	let title = "Movie";
+
+	if (currentMovie?.tmdb_id) {
+		movieId = currentMovie.tmdb_id;
+		title = currentMovie.title || title;
+	}
+
+	// If we still don't have a movieId, try to extract it from the slug
+	if (!movieId && slug) {
+		// Many slugs end with the ID, like "inception-27205"
+		const slugParts = slug.split("-");
+		const potentialId = slugParts[slugParts.length - 1];
+		// Check if it's a number
+		if (!isNaN(potentialId)) {
+			movieId = potentialId;
+		}
+	}
+
+	// If we still don't have any ID, show a friendly error
+	if (!movieId) {
+		return (
+			<div className="movie-page">
+				<div style={{ padding: "2rem", textAlign: "center" }}>
+					<h1>Cannot Load Movie</h1>
+					<p>
+						Sorry, we couldn't identify the movie. Please try again or select a
+						different movie.
+					</p>
+					<Link
+						to="/"
+						style={{
+							display: "inline-block",
+							marginTop: "1rem",
+							padding: "0.5rem 1rem",
+							background: "#e50914",
+							color: "white",
+							borderRadius: "4px",
+							textDecoration: "none",
+						}}
+					>
+						Back to Home
+					</Link>
+				</div>
+			</div>
+		);
+	}
+
+	// Build video URLs for each source
+	const videoUrls = {
+		vidsrc: `https://vidsrc.xyz/embed/movie/${movieId}`,
+		"2embed": `https://www.2embed.cc/embed/${movieId}`,
+	};
+
+	// Get current source URL
+	const currentUrl = videoUrls[source];
+
+	// Extract movie details (if available)
 	const {
-		title,
 		release_date,
 		vote_average,
 		overview,
 		genres,
-		sources,
 		credits,
 		similar,
 		recommendations,
-	} = currentMovie;
+	} = currentMovie || {};
 
+	// Get image URLs
 	const imageBaseUrl = process.env.REACT_APP_TMDB_IMAGE_URL;
-	const backdropUrl = currentMovie.backdrop_path
+	const backdropUrl = currentMovie?.backdrop_path
 		? `${imageBaseUrl}/original${currentMovie.backdrop_path}`
 		: null;
-	const posterUrl = currentMovie.poster_path
+	const posterUrl = currentMovie?.poster_path
 		? `${imageBaseUrl}/w500${currentMovie.poster_path}`
 		: null;
 
+	// Extract directors and cast
 	const directors =
 		credits?.crew?.filter((person) => person.job === "Director") || [];
 	const cast = credits?.cast?.slice(0, 10) || [];
@@ -105,31 +175,108 @@ const MoviePage = () => {
 
 	return (
 		<div className="movie-page">
-			<div
-				className="movie-page__backdrop"
-				style={{
-					backgroundImage: backdropUrl ? `url(${backdropUrl})` : "none",
-				}}
-			>
-				<div className="movie-page__overlay"></div>
-			</div>
+			{/* Backdrop image */}
+			{backdropUrl && (
+				<div
+					className="movie-page__backdrop"
+					style={{
+						backgroundImage: `url(${backdropUrl})`,
+					}}
+				>
+					<div className="movie-page__overlay"></div>
+				</div>
+			)}
 
-			<div className="movie-page__video-container">
-				<div className="movie-page__video-container">
-					<VideoPlayer
-						sources={
-							sources || {
-								vidsrc: `https://vidsrc.xyz/embed/movie/${
-									currentMovie.id || ""
-								}`,
-								"2embed": `https://www.2embed.cc/embed/movie/${
-									currentMovie.id || ""
-								}`,
-							}
-						}
-						type="movie"
-						id={currentMovie.id}
-					/>
+			<div className="movie-page__content">
+				{/* Source selector */}
+				<div
+					style={{
+						display: "flex",
+						justifyContent: "center",
+						margin: "15px 0",
+					}}
+				>
+					<div
+						style={{
+							background: "rgba(0,0,0,0.5)",
+							padding: "8px 16px",
+							borderRadius: "4px",
+							display: "flex",
+							gap: "10px",
+						}}
+					>
+						<button
+							onClick={() => setSource("vidsrc")}
+							style={{
+								background:
+									source === "vidsrc" ? "#e50914" : "rgba(255,255,255,0.2)",
+								border: "none",
+								padding: "8px 16px",
+								borderRadius: "4px",
+								color: "white",
+								cursor: "pointer",
+							}}
+						>
+							VidSrc
+						</button>
+						<button
+							onClick={() => setSource("2embed")}
+							style={{
+								background:
+									source === "2embed" ? "#e50914" : "rgba(255,255,255,0.2)",
+								border: "none",
+								padding: "8px 16px",
+								borderRadius: "4px",
+								color: "white",
+								cursor: "pointer",
+							}}
+						>
+							2Embed
+						</button>
+					</div>
+				</div>
+
+				{/* Display the current URL for debugging */}
+				{process.env.NODE_ENV === "development" && (
+					<div
+						style={{
+							background: "#333",
+							padding: "8px 16px",
+							margin: "0 auto 15px auto",
+							borderRadius: "4px",
+							maxWidth: "800px",
+							wordBreak: "break-all",
+							fontSize: "12px",
+							fontFamily: "monospace",
+						}}
+					>
+						Video URL: {currentUrl}
+					</div>
+				)}
+
+				{/* Video container with direct iframe */}
+				<div
+					className="movie-page__video-container"
+					style={{
+						position: "relative",
+						paddingBottom: "56.25%",
+						height: 0,
+						overflow: "hidden",
+					}}
+				>
+					<iframe
+						src={currentUrl}
+						style={{
+							position: "absolute",
+							top: 0,
+							left: 0,
+							width: "100%",
+							height: "100%",
+							border: "none",
+						}}
+						allowFullScreen
+						title={title}
+					></iframe>
 				</div>
 
 				<div className="movie-page__info">
@@ -213,7 +360,7 @@ const MoviePage = () => {
 							</div>
 						)}
 
-						{cast.length > 0 && (
+						{cast?.length > 0 && (
 							<div className="movie-page__cast">
 								<h3>Cast</h3>
 								<div className="movie-page__cast-list">
