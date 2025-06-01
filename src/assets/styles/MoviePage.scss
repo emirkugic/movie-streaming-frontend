@@ -1,0 +1,671 @@
+.movie-page {
+	position: relative;
+
+	&__backdrop {
+		position: fixed;
+		top: 0;
+		left: 0;
+		width: 100%;
+		height: 100%;
+		background-size: cover;
+		background-position: center;
+		background-repeat: no-repeat;
+		z-index: -1;
+	}
+
+	&__overlay {
+		position: absolute;
+		top: 0;
+		left: 0;
+		width: 100%;
+		height: 100%;
+		background: linear-gradient(
+			to bottom,
+			rgba(20, 20, 20, 0.8) 0%,
+			rgba(20, 20, 20, 0.9) 50%,
+			rgba(20, 20, 20, 1) 100%
+		);
+	}
+
+	&__content {
+		position: relative;
+		z-index: 1;
+		max-width: 1400px;
+		margin: 0 auto;
+		padding: 2rem;
+	}
+
+	&__video-container {
+		margin-bottom: 2rem;
+		box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5);
+		border-radius: 8px;
+		overflow: hidden;
+	}
+
+	&__info {
+		display: grid;
+		grid-template-columns: 1fr;
+		gap: 2rem;
+		margin-bottom: 3rem;
+
+		@media (min-width: 768px) {
+			grid-template-columns: minmax(200px, 300px) 1fr;
+		}
+	}
+
+	&__poster-container {
+		align-self: start;
+	}
+
+	&__poster {
+		width: 100%;
+		border-radius: 8px;
+		box-shadow: 0 5px 15px rgba(0, 0, 0, 0.3);
+	}
+
+	&__title {
+		font-size: 2.5rem;
+		margin-bottom: 1rem;
+	}
+
+	&__meta {
+		display: flex;
+		align-items: center;
+		gap: 1.5rem;
+		margin-bottom: 1rem;
+		color: var(--gray-light);
+	}
+
+	&__release-date {
+		font-size: 1rem;
+	}
+
+	&__rating {
+		display: flex;
+		align-items: center;
+		gap: 0.5rem;
+
+		svg {
+			color: #ffc107;
+		}
+	}
+
+	&__genres {
+		display: flex;
+		flex-wrap: wrap;
+		gap: 0.5rem;
+		margin-bottom: 1.5rem;
+	}
+
+	&__genre {
+		background-color: rgba(255, 255, 255, 0.1);
+		padding: 0.3rem 0.8rem;
+		border-radius: 20px;
+		font-size: 0.8rem;
+
+		&:hover {
+			background-color: rgba(255, 255, 255, 0.2);
+		}
+	}
+
+	&__overview {
+		margin-bottom: 1.5rem;
+
+		h3 {
+			font-size: 1.2rem;
+			font-weight: 500;
+			margin-bottom: 0.5rem;
+			color: var(--gray-light);
+		}
+
+		p {
+			line-height: 1.6;
+		}
+	}
+
+	&__actions {
+		display: flex;
+		gap: 1rem;
+		margin-bottom: 1.5rem;
+	}
+
+	&__watchlist-btn,
+	&__favorite-btn {
+		display: flex;
+		align-items: center;
+		gap: 0.5rem;
+		padding: 0.6rem 1.2rem;
+		border-radius: 4px;
+		font-weight: 500;
+		transition: all 0.2s ease;
+
+		&.active {
+			background-color: var(--success-color);
+
+			&:hover {
+				background-color: darken(#46d369, 10%);
+			}
+		}
+	}
+
+	&__watchlist-btn {
+		background-color: rgba(255, 255, 255, 0.1);
+
+		&:hover {
+			background-color: rgba(255, 255, 255, 0.2);
+		}
+	}
+
+	&__favorite-btn {
+		background-color: rgba(255, 255, 255, 0.1);
+
+		&:hover {
+			background-color: rgba(255, 255, 255, 0.2);
+		}
+	}
+
+	&__directors,
+	&__cast {
+		margin-bottom: 1.5rem;
+
+		h3 {
+			font-size: 1.2rem;
+			font-weight: 500;
+			margin-bottom: 0.5rem;
+			color: var(--gray-light);
+		}
+	}
+
+	&__directors-list {
+		display: flex;
+		flex-wrap: wrap;
+		gap: 0.5rem;
+	}
+
+	&__director {
+		font-weight: 500;
+	}
+
+	&__cast-list {
+		display: grid;
+		grid-template-columns: repeat(2, 1fr);
+		gap: 1rem;
+
+		@media (min-width: 576px) {
+			grid-template-columns: repeat(3, 1fr);
+		}
+
+		@media (min-width: 992px) {
+			grid-template-columns: repeat(4, 1fr);
+		}
+	}
+
+	&__cast-item {
+		display: flex;
+		gap: 0.75rem;
+		background-color: rgba(255, 255, 255, 0.05);
+		border-radius: 4px;
+		padding: 0.75rem;
+		transition: background-color 0.2s ease;
+
+		&:hover {
+			background-color: rgba(255, 255, 255, 0.1);
+		}
+	}
+
+	&__cast-image {
+		width: 50px;
+		height: 50px;
+		border-radius: 50%;
+		overflow: hidden;
+		flex-shrink: 0;
+
+		img {
+			width: 100%;
+			height: 100%;
+			object-fit: cover;
+		}
+	}
+
+	&__cast-placeholder {
+		width: 100%;
+		height: 100%;
+		background-color: var(--gray-dark);
+		border-radius: 50%;
+	}
+
+	&__cast-info {
+		display: flex;
+		flex-direction: column;
+		justify-content: center;
+	}
+
+	&__cast-name {
+		font-weight: 500;
+		font-size: 0.9rem;
+	}
+
+	&__cast-character {
+		font-size: 0.8rem;
+		color: var(--gray);
+	}
+	.tv-show-page {
+		position: relative;
+
+		&__backdrop {
+			position: fixed;
+			top: 0;
+			left: 0;
+			width: 100%;
+			height: 100%;
+			background-size: cover;
+			background-position: center;
+			background-repeat: no-repeat;
+			z-index: -1;
+		}
+
+		&__overlay {
+			position: absolute;
+			top: 0;
+			left: 0;
+			width: 100%;
+			height: 100%;
+			background: linear-gradient(
+				to bottom,
+				rgba(20, 20, 20, 0.8) 0%,
+				rgba(20, 20, 20, 0.9) 50%,
+				rgba(20, 20, 20, 1) 100%
+			);
+		}
+
+		&__content {
+			position: relative;
+			z-index: 1;
+			max-width: 1400px;
+			margin: 0 auto;
+			padding: 2rem;
+		}
+
+		&__header {
+			display: grid;
+			grid-template-columns: 1fr;
+			gap: 2rem;
+			margin-bottom: 3rem;
+
+			@media (min-width: 768px) {
+				grid-template-columns: minmax(200px, 300px) 1fr;
+			}
+		}
+
+		&__poster-container {
+			align-self: start;
+		}
+
+		&__poster {
+			width: 100%;
+			border-radius: 8px;
+			box-shadow: 0 5px 15px rgba(0, 0, 0, 0.3);
+		}
+
+		&__title {
+			font-size: 2.5rem;
+			margin-bottom: 1rem;
+		}
+
+		&__meta {
+			display: flex;
+			align-items: center;
+			gap: 1.5rem;
+			margin-bottom: 1rem;
+			color: var(--gray-light);
+		}
+
+		&__first-air-date {
+			font-size: 1rem;
+		}
+
+		&__rating {
+			display: flex;
+			align-items: center;
+			gap: 0.5rem;
+
+			svg {
+				color: #ffc107;
+			}
+		}
+
+		&__genres {
+			display: flex;
+			flex-wrap: wrap;
+			gap: 0.5rem;
+			margin-bottom: 1.5rem;
+		}
+
+		&__genre {
+			background-color: rgba(255, 255, 255, 0.1);
+			padding: 0.3rem 0.8rem;
+			border-radius: 20px;
+			font-size: 0.8rem;
+
+			&:hover {
+				background-color: rgba(255, 255, 255, 0.2);
+			}
+		}
+
+		&__overview {
+			margin-bottom: 1.5rem;
+
+			h3 {
+				font-size: 1.2rem;
+				font-weight: 500;
+				margin-bottom: 0.5rem;
+				color: var(--gray-light);
+			}
+
+			p {
+				line-height: 1.6;
+			}
+		}
+
+		&__actions {
+			display: flex;
+			gap: 1rem;
+			margin-bottom: 1.5rem;
+		}
+
+		&__watchlist-btn,
+		&__favorite-btn {
+			display: flex;
+			align-items: center;
+			gap: 0.5rem;
+			padding: 0.6rem 1.2rem;
+			border-radius: 4px;
+			font-weight: 500;
+			transition: all 0.2s ease;
+
+			&.active {
+				background-color: var(--success-color);
+
+				&:hover {
+					background-color: darken(#46d369, 10%);
+				}
+			}
+		}
+
+		&__watchlist-btn {
+			background-color: rgba(255, 255, 255, 0.1);
+
+			&:hover {
+				background-color: rgba(255, 255, 255, 0.2);
+			}
+		}
+
+		&__favorite-btn {
+			background-color: rgba(255, 255, 255, 0.1);
+
+			&:hover {
+				background-color: rgba(255, 255, 255, 0.2);
+			}
+		}
+
+		&__creators {
+			margin-bottom: 1.5rem;
+
+			h3 {
+				font-size: 1.2rem;
+				font-weight: 500;
+				margin-bottom: 0.5rem;
+				color: var(--gray-light);
+			}
+		}
+
+		&__creators-list {
+			display: flex;
+			flex-wrap: wrap;
+			gap: 0.75rem;
+		}
+
+		&__creator {
+			font-weight: 500;
+		}
+
+		&__seasons {
+			margin-bottom: 3rem;
+
+			h2 {
+				font-size: 1.5rem;
+				margin-bottom: 1.5rem;
+				font-weight: 600;
+			}
+		}
+
+		&__seasons-tabs {
+			display: flex;
+			flex-wrap: wrap;
+			gap: 0.5rem;
+			margin-bottom: 1.5rem;
+		}
+
+		&__season-tab {
+			padding: 0.5rem 1rem;
+			background-color: rgba(255, 255, 255, 0.1);
+			border-radius: 4px;
+			font-weight: 500;
+			transition: all 0.2s ease;
+
+			&:hover {
+				background-color: rgba(255, 255, 255, 0.2);
+			}
+
+			&.active {
+				background-color: var(--primary-color);
+			}
+		}
+
+		&__episodes {
+			background-color: rgba(255, 255, 255, 0.05);
+			border-radius: 8px;
+			padding: 1.5rem;
+		}
+
+		&__season-info {
+			display: grid;
+			grid-template-columns: 1fr;
+			gap: 1.5rem;
+			margin-bottom: 2rem;
+
+			@media (min-width: 576px) {
+				grid-template-columns: 150px 1fr;
+			}
+		}
+
+		&__season-poster {
+			img {
+				width: 100%;
+				border-radius: 4px;
+			}
+		}
+
+		&__season-poster-placeholder {
+			width: 100%;
+			aspect-ratio: 2/3;
+			background-color: var(--gray-dark);
+			border-radius: 4px;
+		}
+
+		&__season-details {
+			h3 {
+				font-size: 1.5rem;
+				margin-bottom: 0.5rem;
+			}
+		}
+
+		&__season-date,
+		&__episode-count {
+			color: var(--gray);
+			margin-bottom: 0.5rem;
+		}
+
+		&__season-overview {
+			margin-top: 1rem;
+			line-height: 1.6;
+		}
+
+		&__episodes-list {
+			h3 {
+				font-size: 1.2rem;
+				font-weight: 500;
+				margin-bottom: 1rem;
+			}
+		}
+
+		&__episode-items {
+			display: grid;
+			grid-template-columns: 1fr;
+			gap: 0.75rem;
+		}
+
+		&__episode-item {
+			display: flex;
+			align-items: center;
+			gap: 1rem;
+			background-color: rgba(255, 255, 255, 0.07);
+			border-radius: 4px;
+			padding: 0.75rem;
+			transition: background-color 0.2s ease;
+
+			&:hover {
+				background-color: rgba(255, 255, 255, 0.15);
+			}
+		}
+
+		&__episode-number {
+			width: 2.5rem;
+			height: 2.5rem;
+			display: flex;
+			align-items: center;
+			justify-content: center;
+			background-color: var(--primary-color);
+			border-radius: 50%;
+			font-weight: 500;
+		}
+
+		&__episode-info {
+			h4 {
+				font-size: 1rem;
+				font-weight: 500;
+				margin-bottom: 0.25rem;
+			}
+
+			p {
+				font-size: 0.9rem;
+				color: var(--gray);
+			}
+		}
+
+		&__cast {
+			margin-bottom: 3rem;
+
+			h2 {
+				font-size: 1.5rem;
+				margin-bottom: 1.5rem;
+				font-weight: 600;
+			}
+		}
+
+		&__cast-list {
+			display: grid;
+			grid-template-columns: repeat(2, 1fr);
+			gap: 1rem;
+
+			@media (min-width: 576px) {
+				grid-template-columns: repeat(3, 1fr);
+			}
+
+			@media (min-width: 992px) {
+				grid-template-columns: repeat(4, 1fr);
+			}
+		}
+
+		&__cast-item {
+			display: flex;
+			gap: 0.75rem;
+			background-color: rgba(255, 255, 255, 0.05);
+			border-radius: 4px;
+			padding: 0.75rem;
+			transition: background-color 0.2s ease;
+
+			&:hover {
+				background-color: rgba(255, 255, 255, 0.1);
+			}
+		}
+
+		&__cast-image {
+			width: 50px;
+			height: 50px;
+			border-radius: 50%;
+			overflow: hidden;
+			flex-shrink: 0;
+
+			img {
+				width: 100%;
+				height: 100%;
+				object-fit: cover;
+			}
+		}
+
+		&__cast-placeholder {
+			width: 100%;
+			height: 100%;
+			background-color: var(--gray-dark);
+			border-radius: 50%;
+		}
+
+		&__cast-info {
+			display: flex;
+			flex-direction: column;
+			justify-content: center;
+		}
+
+		&__cast-name {
+			font-weight: 500;
+			font-size: 0.9rem;
+		}
+
+		&__cast-character {
+			font-size: 0.8rem;
+			color: var(--gray);
+		}
+
+		&__similar,
+		&__recommendations {
+			margin-bottom: 3rem;
+
+			h2 {
+				font-size: 1.5rem;
+				margin-bottom: 1.5rem;
+				font-weight: 600;
+			}
+		}
+	}
+
+	@media (max-width: 768px) {
+		.tv-show-page {
+			&__content {
+				padding: 1.5rem;
+			}
+
+			&__title {
+				font-size: 2rem;
+			}
+
+			&__actions {
+				flex-direction: column;
+			}
+
+			&__cast-list {
+				grid-template-columns: 1fr;
+			}
+		}
+	}
+}

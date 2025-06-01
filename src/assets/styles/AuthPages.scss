@@ -1,0 +1,124 @@
+.auth-page {
+	min-height: calc(100vh - 70px);
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	padding: 2rem;
+	background: linear-gradient(rgba(0, 0, 0, 0.7), rgba(0, 0, 0, 0.7)),
+		url("https://assets.nflxext.com/ffe/siteui/vlv3/00103100-5b45-4d4b-b0bd-1e7b5ec88f15/eebad5a5-ac72-426c-9eaf-9a18d1ac5134/BA-en-20230814-popsignuptwoweeks-perspective_alpha_website_large.jpg");
+	background-size: cover;
+	background-position: center;
+
+	.auth-container {
+		background-color: rgba(0, 0, 0, 0.75);
+		border-radius: 4px;
+		box-shadow: 0 5px 15px rgba(0, 0, 0, 0.3);
+		padding: 3rem 2rem;
+		width: 100%;
+		max-width: 400px;
+
+		h1 {
+			text-align: center;
+			margin-bottom: 2rem;
+			font-size: 2rem;
+		}
+
+		.auth-form {
+			.form-group {
+				margin-bottom: 1.5rem;
+
+				label {
+					display: block;
+					margin-bottom: 0.5rem;
+					font-weight: 500;
+				}
+
+				input {
+					width: 100%;
+					padding: 0.75rem;
+					background-color: #333;
+					border: none;
+					border-radius: 4px;
+					color: var(--text-color);
+
+					&:focus {
+						outline: none;
+						background-color: #454545;
+					}
+
+					&.error {
+						border: 2px solid var(--error-color);
+					}
+				}
+
+				.error-message {
+					color: var(--error-color);
+					font-size: 0.9rem;
+					margin-top: 0.5rem;
+				}
+			}
+
+			.form-error {
+				background-color: rgba(229, 9, 20, 0.2);
+				color: var(--error-color);
+				padding: 0.75rem;
+				border-radius: 4px;
+				margin-bottom: 1.5rem;
+
+				p {
+					margin: 0;
+				}
+			}
+
+			.auth-button {
+				width: 100%;
+				padding: 0.75rem;
+				background-color: var(--primary-color);
+				color: var(--text-color);
+				border: none;
+				border-radius: 4px;
+				font-weight: 500;
+				font-size: 1rem;
+				cursor: pointer;
+				transition: background-color 0.2s ease;
+
+				&:hover {
+					background-color: darken(#e50914, 10%);
+				}
+
+				&:disabled {
+					background-color: var(--gray-dark);
+					cursor: not-allowed;
+				}
+			}
+		}
+
+		.auth-links {
+			margin-top: 1.5rem;
+			text-align: center;
+
+			p {
+				color: var(--gray);
+
+				a {
+					color: var(--text-color);
+					text-decoration: none;
+
+					&:hover {
+						text-decoration: underline;
+					}
+				}
+			}
+		}
+	}
+}
+
+@media (max-width: 576px) {
+	.auth-page {
+		padding: 1rem;
+
+		.auth-container {
+			padding: 2rem 1.5rem;
+		}
+	}
+}
