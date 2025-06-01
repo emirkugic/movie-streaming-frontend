@@ -1,70 +1,114 @@
-# Getting Started with Create React App
+# Araneum Streaming Platform Frontend
 
-This project was bootstrapped with [Create React App](https://github.com/facebook/create-react-app).
+![Araneum Streaming Logo](public/logo-long-white.png)
 
-## Available Scripts
+A beautiful, modern streaming platform frontend built with React. This project provides a Netflix-inspired user interface for browsing and watching movies and TV shows.
 
-In the project directory, you can run:
+## 🌟 Features
 
-### `npm start`
+- **Modern UI** - Sleek dark theme with elegant animations and transitions
+- **Responsive Design** - Fully responsive layout that works on all devices
+- **Movie & TV Show Browsing** - Browse trending movies and TV shows
+- **Media Player** - Integrated video player with multiple source options
+- **User Accounts** - Login, registration, and profile management
+- **Personal Lists** - Watchlist, favorites, and watch history functionality
+- **Search** - Powerful search functionality to find content
 
-Runs the app in the development mode.\
-Open [http://localhost:3000](http://localhost:3000) to view it in your browser.
+## 🔧 Tech Stack
 
-The page will reload when you make changes.\
-You may also see any lint errors in the console.
+- **React** - UI library
+- **Redux Toolkit** - State management
+- **React Router** - Navigation and routing
+- **SASS/SCSS** - Styling
+- **Axios** - API requests
+- **React Icons** - Icon library
 
-### `npm test`
+## 🚀 Getting Started
 
-Launches the test runner in the interactive watch mode.\
-See the section about [running tests](https://facebook.github.io/create-react-app/docs/running-tests) for more information.
+### Prerequisites
 
-### `npm run build`
+- Node.js (v14+)
+- npm or yarn
 
-Builds the app for production to the `build` folder.\
-It correctly bundles React in production mode and optimizes the build for the best performance.
+### Installation
 
-The build is minified and the filenames include the hashes.\
-Your app is ready to be deployed!
+1. Clone the repository
 
-See the section about [deployment](https://facebook.github.io/create-react-app/docs/deployment) for more information.
+```bash
+git clone https://github.com/emirkugic/movie-streaming-frontend.git
+cd movie-streaming-frontend
+```
 
-### `npm run eject`
+2. Install dependencies
 
-**Note: this is a one-way operation. Once you `eject`, you can't go back!**
+```bash
+npm install
+# or
+yarn install
+```
 
-If you aren't satisfied with the build tool and configuration choices, you can `eject` at any time. This command will remove the single build dependency from your project.
+3. Start development server
 
-Instead, it will copy all the configuration files and the transitive dependencies (webpack, Babel, ESLint, etc) right into your project so you have full control over them. All of the commands except `eject` will still work, but they will point to the copied scripts so you can tweak them. At this point you're on your own.
+```bash
+npm start
+# or
+yarn start
+```
 
-You don't have to ever use `eject`. The curated feature set is suitable for small and middle deployments, and you shouldn't feel obligated to use this feature. However we understand that this tool wouldn't be useful if you couldn't customize it when you are ready for it.
+4. Open [http://localhost:3000](http://localhost:3000) in your browser
 
-## Learn More
+## 📂 Project Structure
 
-You can learn more in the [Create React App documentation](https://facebook.github.io/create-react-app/docs/getting-started).
+```
+src/
+├── assets/         # Static assets and styles
+├── components/     # Reusable UI components
+├── layouts/        # Layout components
+├── pages/          # Page components
+├── services/       # API services
+├── store/          # Redux store and slices
+├── utils/          # Utility functions
+├── App.js          # Main app component
+└── index.js        # Entry point
+```
 
-To learn React, check out the [React documentation](https://reactjs.org/).
+## 🔌 API Integration
 
-### Code Splitting
+This frontend works with the [Araneum Streaming API](https://github.com/emirkugic/araneum-streaming-api) backend. Make sure to set up and run the backend service for full functionality.
 
-This section has moved here: [https://facebook.github.io/create-react-app/docs/code-splitting](https://facebook.github.io/create-react-app/docs/code-splitting)
+The backend provides:
 
-### Analyzing the Bundle Size
+- User authentication
+- Movie and TV show data
+- Search functionality
+- User preferences and lists
 
-This section has moved here: [https://facebook.github.io/create-react-app/docs/analyzing-the-bundle-size](https://facebook.github.io/create-react-app/docs/analyzing-the-bundle-size)
+## 📱 Responsive Design
 
-### Making a Progressive Web App
+The UI is designed to work seamlessly across different devices:
 
-This section has moved here: [https://facebook.github.io/create-react-app/docs/making-a-progressive-web-app](https://facebook.github.io/create-react-app/docs/making-a-progressive-web-app)
+- Mobile phones (320px+)
+- Tablets (768px+)
+- Desktops (992px+)
+- Large screens (1200px+)
 
-### Advanced Configuration
+## 🎨 UI Components
 
-This section has moved here: [https://facebook.github.io/create-react-app/docs/advanced-configuration](https://facebook.github.io/create-react-app/docs/advanced-configuration)
+- **Header** - Navigation bar with search and user menu
+- **Hero Slider** - Featured content showcase
+- **Media Cards** - Interactive cards for movies and TV shows
+- **Media Grid** - Responsive grid layout for content
+- **Video Player** - Integrated player with source options
+- **Profile Section** - User profile management
+- **Footer** - Site information and links
 
-### Deployment
+## 🌐 Browser Support
 
-This section has moved here: [https://facebook.github.io/create-react-app/docs/deployment](https://facebook.github.io/create-react-app/docs/deployment)
+- Chrome (latest)
+- Firefox (latest)
+- Safari (latest)
+- Edge (latest)
 
-### `npm run build` fails to minify
+## 📝 License
 
-This section has moved here: [https://facebook.github.io/create-react-app/docs/troubleshooting#npm-run-build-fails-to-minify](https://facebook.github.io/create-react-app/docs/troubleshooting#npm-run-build-fails-to-minify)
+This project is licensed under the MIT License - see the LICENSE file for details.
