@@ -154,18 +154,20 @@ const TvShowPage = () => {
 						<h1 className="tv-show-page__title">{name}</h1>
 
 						<div className="tv-show-page__meta">
-							{first_air_date && (
+							{first_air_date && (w
 								<span className="tv-show-page__first-air-date">
 									{formatDate(first_air_date)}
 								</span>
 							)}
 
-							{vote_average > 0 && (
-								<span className="tv-show-page__rating">
-									<FaStar />
-									<span>{vote_average.toFixed(1)}</span>
-								</span>
-							)}
+							{typeof vote_average === "number" &&
+								!isNaN(vote_average) &&
+								vote_average > 0 && (
+									<span className="tv-show-page__rating">
+										<FaStar />
+										<span>{vote_average.toFixed(1)}</span>
+									</span>
+								)}
 						</div>
 
 						{genres && genres.length > 0 && (

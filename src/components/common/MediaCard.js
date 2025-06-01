@@ -16,6 +16,9 @@ const MediaCard = ({ media, type }) => {
 		return new Date(dateString).getFullYear();
 	};
 
+	// Check if voteAverage is a valid number that can use toFixed
+	const isValidRating = typeof voteAverage === "number" && !isNaN(voteAverage);
+
 	return (
 		<div className="media-card">
 			<Link to={`/${type === "movie" ? "movies" : "tv-shows"}/${slug}`}>
@@ -32,7 +35,7 @@ const MediaCard = ({ media, type }) => {
 						</div>
 					)}
 
-					{voteAverage > 0 && (
+					{isValidRating && voteAverage > 0 && (
 						<div className="media-card__rating">
 							<FaStar />
 							<span>{voteAverage.toFixed(1)}</span>

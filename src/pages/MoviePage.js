@@ -136,12 +136,14 @@ const MoviePage = () => {
 								</span>
 							)}
 
-							{vote_average > 0 && (
-								<span className="movie-page__rating">
-									<FaStar />
-									<span>{vote_average.toFixed(1)}</span>
-								</span>
-							)}
+							{typeof vote_average === "number" &&
+								!isNaN(vote_average) &&
+								vote_average > 0 && (
+									<span className="movie-page__rating">
+										<FaStar />
+										<span>{vote_average.toFixed(1)}</span>
+									</span>
+								)}
 						</div>
 
 						{genres && genres.length > 0 && (
