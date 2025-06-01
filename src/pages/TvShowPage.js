@@ -154,7 +154,7 @@ const TvShowPage = () => {
 						<h1 className="tv-show-page__title">{name}</h1>
 
 						<div className="tv-show-page__meta">
-							{first_air_date && (w
+							{first_air_date && (
 								<span className="tv-show-page__first-air-date">
 									{formatDate(first_air_date)}
 								</span>
