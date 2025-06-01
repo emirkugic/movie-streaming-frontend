@@ -1,0 +1,85 @@
+/* src/layouts/MainLayout/MainLayout.scss */
+.main-layout {
+	min-height: 100vh;
+	display: flex;
+	flex-direction: column;
+	position: relative;
+	opacity: 0;
+	transition: opacity 0.5s ease;
+
+	&.loaded {
+		opacity: 1;
+	}
+}
+
+.main-content {
+	flex: 1;
+	padding-top: var(--header-height);
+}
+
+.scroll-top-btn {
+	position: fixed;
+	bottom: 2rem;
+	right: 2rem;
+	width: 45px;
+	height: 45px;
+	border-radius: 50%;
+	background-color: var(--primary);
+	color: white;
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	border: none;
+	cursor: pointer;
+	z-index: 100;
+	box-shadow: var(--shadow-md);
+	transition: all var(--transition-normal);
+	animation: fadeInUp 0.3s ease;
+
+	svg {
+		font-size: 1.2rem;
+	}
+
+	&:hover {
+		background-color: var(--primary-hover);
+		transform: translateY(-5px);
+		box-shadow: var(--shadow-lg);
+	}
+}
+
+@keyframes fadeInUp {
+	from {
+		opacity: 0;
+		transform: translateY(20px);
+	}
+	to {
+		opacity: 1;
+		transform: translateY(0);
+	}
+}
+
+@media (max-width: 768px) {
+	.scroll-top-btn {
+		bottom: 1.5rem;
+		right: 1.5rem;
+		width: 40px;
+		height: 40px;
+
+		svg {
+			font-size: 1.1rem;
+		}
+	}
+}
+
+@media (max-width: 576px) {
+	.scroll-top-btn {
+		bottom: 1rem;
+		right: 1rem;
+		width: 35px;
+		height: 35px;
+
+		svg {
+			font-size: 1rem;
+		}
+	}
+}

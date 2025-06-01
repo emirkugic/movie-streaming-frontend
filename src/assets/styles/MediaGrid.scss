@@ -1,28 +1,166 @@
+/* src/assets/styles/MediaGrid.scss */
+.media-grid-container {
+	margin-bottom: 3rem;
+}
+
 .media-grid {
 	display: grid;
-	grid-template-columns: repeat(2, 1fr);
-	gap: 1rem;
+	grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
+	gap: 1.5rem;
 
-	@media (min-width: 576px) {
-		grid-template-columns: repeat(3, 1fr);
+	&__header {
+		display: flex;
+		align-items: center;
+		justify-content: space-between;
+		margin-bottom: 1.5rem;
 	}
 
-	@media (min-width: 768px) {
-		grid-template-columns: repeat(4, 1fr);
+	&__title {
+		font-size: 1.5rem;
+		font-weight: 700;
+		margin-bottom: 0;
 	}
 
-	@media (min-width: 992px) {
-		grid-template-columns: repeat(5, 1fr);
+	&__view-all {
+		display: flex;
+		align-items: center;
+		gap: 0.5rem;
+		color: var(--text-secondary);
+		font-size: 0.95rem;
+		transition: all var(--transition-normal);
+
+		svg {
+			font-size: 0.8rem;
+			transition: transform var(--transition-normal);
+		}
+
+		&:hover {
+			color: var(--primary);
+
+			svg {
+				transform: translateX(3px);
+			}
+		}
 	}
 
-	@media (min-width: 1200px) {
-		grid-template-columns: repeat(6, 1fr);
-	}
-
-	&__empty {
-		grid-column: 1 / -1;
+	&__empty,
+	&__error {
+		background-color: var(--card-bg);
+		border-radius: var(--radius-md);
+		padding: 3rem;
 		text-align: center;
-		padding: 2rem;
-		color: var(--gray);
+		border: 1px solid var(--border);
+
+		p {
+			color: var(--text-secondary);
+			margin-bottom: 1.5rem;
+		}
+	}
+
+	// Skeleton loading styles
+	&__skeleton {
+		background-color: var(--card-bg);
+		border-radius: var(--radius-md);
+		overflow: hidden;
+		height: 100%;
+		animation: pulse 1.5s infinite alternate;
+
+		&-poster {
+			width: 100%;
+			aspect-ratio: 2/3;
+			background-color: rgba(255, 255, 255, 0.05);
+		}
+
+		&-info {
+			padding: 0.8rem;
+		}
+
+		&-title {
+			height: 0.9rem;
+			width: 90%;
+			background-color: rgba(255, 255, 255, 0.05);
+			margin-bottom: 0.8rem;
+			border-radius: 4px;
+		}
+
+		&-year {
+			height: 0.7rem;
+			width: 60%;
+			background-color: rgba(255, 255, 255, 0.05);
+			border-radius: 4px;
+		}
+	}
+}
+
+// Different column counts for different screen sizes
+@media (min-width: 1600px) {
+	.media-grid {
+		grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+	}
+}
+
+@media (max-width: 1400px) {
+	.media-grid {
+		grid-template-columns: repeat(auto-fill, minmax(170px, 1fr));
+	}
+}
+
+@media (max-width: 1200px) {
+	.media-grid {
+		grid-template-columns: repeat(auto-fill, minmax(160px, 1fr));
+	}
+}
+
+@media (max-width: 992px) {
+	.media-grid {
+		grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
+		gap: 1.25rem;
+
+		&__title {
+			font-size: 1.4rem;
+		}
+	}
+
+	.media-grid-container {
+		margin-bottom: 2.5rem;
+	}
+}
+
+@media (max-width: 768px) {
+	.media-grid {
+		grid-template-columns: repeat(auto-fill, minmax(140px, 1fr));
+		gap: 1rem;
+
+		&__title {
+			font-size: 1.3rem;
+		}
+
+		&__empty,
+		&__error {
+			padding: 2rem;
+		}
+	}
+}
+
+@media (max-width: 576px) {
+	.media-grid {
+		grid-template-columns: repeat(auto-fill, minmax(120px, 1fr));
+
+		&__title {
+			font-size: 1.2rem;
+		}
+	}
+
+	.media-grid-container {
+		margin-bottom: 2rem;
+	}
+}
+
+@keyframes pulse {
+	0% {
+		opacity: 0.5;
+	}
+	100% {
+		opacity: 0.8;
 	}
 }

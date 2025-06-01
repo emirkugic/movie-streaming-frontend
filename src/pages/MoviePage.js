@@ -1,9 +1,21 @@
-// src/pages/MoviePage.js - FINAL FIX
-import React, { useEffect, useState } from "react";
-import { useParams, Link } from "react-router-dom";
+// src/pages/MoviePage.js
+import React, { useEffect, useState, useRef } from "react";
+import { useParams, Link, useNavigate } from "react-router-dom";
 import { useDispatch, useSelector } from "react-redux";
 import { fetchMovieDetails, clearMovieDetails } from "../store/moviesSlice";
-import { FaStar, FaPlus, FaHeart, FaRegHeart, FaCheck } from "react-icons/fa";
+import {
+	FaStar,
+	FaPlay,
+	FaPlus,
+	FaHeart,
+	FaRegHeart,
+	FaCheck,
+	FaArrowLeft,
+	FaShareAlt,
+	FaCalendarAlt,
+	FaClock,
+	FaGlobe,
+} from "react-icons/fa";
 import {
 	addToWatchlist,
 	removeFromWatchlist,
@@ -18,6 +30,7 @@ const MoviePage = () => {
 	// Get movie slug from URL
 	const { slug } = useParams();
 	const dispatch = useDispatch();
+	const navigate = useNavigate();
 	const { currentMovie, loading } = useSelector((state) => state.movies);
 	const { isAuthenticated } = useSelector((state) => state.auth);
 
@@ -25,13 +38,18 @@ const MoviePage = () => {
 	const [source, setSource] = useState("vidsrc"); // vidsrc is default
 	const [inWatchlist, setInWatchlist] = useState(false);
 	const [inFavorites, setInFavorites] = useState(false);
+	const [showTrailer, setShowTrailer] = useState(false);
+	const playerRef = useRef(null);
+	const detailsRef = useRef(null);
+
+	// Scroll to top on mount
+	useEffect(() => {
+		window.scrollTo(0, 0);
+	}, [slug]);
 
 	// Fetch movie details when component mounts
 	useEffect(() => {
 		dispatch(fetchMovieDetails(slug));
-
-		// Log for debugging
-		console.log("Fetching movie details:", { slug });
 
 		// Cleanup function
 		return () => {
@@ -74,9 +92,42 @@ const MoviePage = () => {
 		}
 	};
 
+	// Scroll to player when Watch Now is clicked
+	const scrollToPlayer = () => {
+		playerRef.current?.scrollIntoView({ behavior: "smooth", block: "start" });
+	};
+
+	// Scroll to details when More Info is clicked
+	const scrollToDetails = () => {
+		detailsRef.current?.scrollIntoView({ behavior: "smooth", block: "start" });
+	};
+
+	// Handle share functionality
+	const handleShare = () => {
+		if (navigator.share) {
+			navigator
+				.share({
+					title: currentMovie?.title,
+					text: `Check out ${currentMovie?.title} on Araneum Stream`,
+					url: window.location.href,
+				})
+				.catch((error) => console.log("Sharing failed", error));
+		} else {
+			// Fallback - copy to clipboard
+			navigator.clipboard
+				.writeText(window.location.href)
+				.then(() => alert("Link copied to clipboard!"))
+				.catch((err) => console.error("Could not copy text: ", err));
+		}
+	};
+
 	// Show loading indicator while data is loading
 	if (loading) {
-		return <Loader />;
+		return (
+			<div className="movie-page movie-page--loading">
+				<Loader />
+			</div>
+		);
 	}
 
 	// Get movie ID and other details
@@ -102,27 +153,23 @@ const MoviePage = () => {
 	// If we still don't have any ID, show a friendly error
 	if (!movieId) {
 		return (
-			<div className="movie-page">
-				<div style={{ padding: "2rem", textAlign: "center" }}>
-					<h1>Cannot Load Movie</h1>
-					<p>
-						Sorry, we couldn't identify the movie. Please try again or select a
-						different movie.
-					</p>
-					<Link
-						to="/"
-						style={{
-							display: "inline-block",
-							marginTop: "1rem",
-							padding: "0.5rem 1rem",
-							background: "#e50914",
-							color: "white",
-							borderRadius: "4px",
-							textDecoration: "none",
-						}}
-					>
-						Back to Home
-					</Link>
+			<div className="movie-page movie-page--error">
+				<div className="container">
+					<div className="movie-page__error">
+						<h1>Cannot Load Movie</h1>
+						<p>
+							Sorry, we couldn't identify the movie. Please try again or select
+							a different movie.
+						</p>
+						<div className="movie-page__error-actions">
+							<button className="btn" onClick={() => navigate(-1)}>
+								<FaArrowLeft /> Go Back
+							</button>
+							<Link to="/" className="btn btn-secondary">
+								Go to Home
+							</Link>
+						</div>
+					</div>
 				</div>
 			</div>
 		);
@@ -141,11 +188,14 @@ const MoviePage = () => {
 	const {
 		release_date,
 		vote_average,
+		runtime,
 		overview,
 		genres,
 		credits,
 		similar,
 		recommendations,
+		videos,
+		homepage,
 	} = currentMovie || {};
 
 	// Get image URLs
@@ -173,242 +223,287 @@ const MoviePage = () => {
 		});
 	};
 
+	// Format runtime
+	const formatRuntime = (minutes) => {
+		if (!minutes) return "";
+		const hours = Math.floor(minutes / 60);
+		const mins = minutes % 60;
+		return `${hours}h ${mins}m`;
+	};
+
+	// Find trailer
+	const trailer =
+		videos?.results?.find(
+			(video) => video.type === "Trailer" && video.site === "YouTube"
+		) || videos?.results?.[0];
+
 	return (
 		<div className="movie-page">
-			{/* Backdrop image */}
-			{backdropUrl && (
+			{/* Movie Hero Section */}
+			<div className="movie-hero">
 				<div
-					className="movie-page__backdrop"
+					className="movie-hero__backdrop"
 					style={{
-						backgroundImage: `url(${backdropUrl})`,
+						backgroundImage: backdropUrl ? `url(${backdropUrl})` : "none",
 					}}
 				>
-					<div className="movie-page__overlay"></div>
-				</div>
-			)}
-
-			<div className="movie-page__content">
-				{/* Source selector */}
-				<div
-					style={{
-						display: "flex",
-						justifyContent: "center",
-						margin: "15px 0",
-					}}
-				>
-					<div
-						style={{
-							background: "rgba(0,0,0,0.5)",
-							padding: "8px 16px",
-							borderRadius: "4px",
-							display: "flex",
-							gap: "10px",
-						}}
-					>
-						<button
-							onClick={() => setSource("vidsrc")}
-							style={{
-								background:
-									source === "vidsrc" ? "#e50914" : "rgba(255,255,255,0.2)",
-								border: "none",
-								padding: "8px 16px",
-								borderRadius: "4px",
-								color: "white",
-								cursor: "pointer",
-							}}
-						>
-							VidSrc
-						</button>
-						<button
-							onClick={() => setSource("2embed")}
-							style={{
-								background:
-									source === "2embed" ? "#e50914" : "rgba(255,255,255,0.2)",
-								border: "none",
-								padding: "8px 16px",
-								borderRadius: "4px",
-								color: "white",
-								cursor: "pointer",
-							}}
-						>
-							2Embed
-						</button>
-					</div>
+					<div className="movie-hero__overlay"></div>
 				</div>
 
-				{/* Display the current URL for debugging */}
-				{process.env.NODE_ENV === "development" && (
-					<div
-						style={{
-							background: "#333",
-							padding: "8px 16px",
-							margin: "0 auto 15px auto",
-							borderRadius: "4px",
-							maxWidth: "800px",
-							wordBreak: "break-all",
-							fontSize: "12px",
-							fontFamily: "monospace",
-						}}
-					>
-						Video URL: {currentUrl}
-					</div>
-				)}
-
-				{/* Video container with direct iframe */}
-				<div
-					className="movie-page__video-container"
-					style={{
-						position: "relative",
-						paddingBottom: "56.25%",
-						height: 0,
-						overflow: "hidden",
-					}}
-				>
-					<iframe
-						src={currentUrl}
-						style={{
-							position: "absolute",
-							top: 0,
-							left: 0,
-							width: "100%",
-							height: "100%",
-							border: "none",
-						}}
-						allowFullScreen
-						title={title}
-					></iframe>
-				</div>
-
-				<div className="movie-page__info">
-					<div className="movie-page__poster-container">
-						{posterUrl && (
-							<img src={posterUrl} alt={title} className="movie-page__poster" />
-						)}
-					</div>
-
-					<div className="movie-page__details">
-						<h1 className="movie-page__title">{title}</h1>
-
-						<div className="movie-page__meta">
-							{release_date && (
-								<span className="movie-page__release-date">
-									{formatDate(release_date)}
-								</span>
+				<div className="container">
+					<div className="movie-hero__content">
+						<div className="movie-hero__poster">
+							{posterUrl ? (
+								<img src={posterUrl} alt={title} />
+							) : (
+								<div className="movie-hero__no-poster">
+									<span>{title}</span>
+								</div>
 							)}
-
-							{typeof vote_average === "number" &&
-								!isNaN(vote_average) &&
-								vote_average > 0 && (
-									<span className="movie-page__rating">
-										<FaStar />
-										<span>{vote_average.toFixed(1)}</span>
-									</span>
-								)}
 						</div>
 
-						{genres && genres.length > 0 && (
-							<div className="movie-page__genres">
-								{genres.map((genre) => (
-									<span key={genre.id} className="movie-page__genre">
-										{genre.name}
-									</span>
-								))}
+						<div className="movie-hero__info">
+							<h1 className="movie-hero__title">{title}</h1>
+
+							<div className="movie-hero__meta">
+								{release_date && (
+									<div className="movie-hero__meta-item">
+										<FaCalendarAlt />
+										<span>{formatDate(release_date)}</span>
+									</div>
+								)}
+
+								{runtime > 0 && (
+									<div className="movie-hero__meta-item">
+										<FaClock />
+										<span>{formatRuntime(runtime)}</span>
+									</div>
+								)}
+
+								{typeof vote_average === "number" && vote_average > 0 && (
+									<div className="movie-hero__meta-item movie-hero__rating">
+										<FaStar />
+										<span>{vote_average.toFixed(1)}</span>
+									</div>
+								)}
+
+								{homepage && (
+									<div className="movie-hero__meta-item">
+										<a
+											href={homepage}
+											target="_blank"
+											rel="noopener noreferrer"
+											className="movie-hero__website"
+										>
+											<FaGlobe />
+											<span>Website</span>
+										</a>
+									</div>
+								)}
 							</div>
-						)}
 
-						{overview && (
-							<div className="movie-page__overview">
-								<h3>Overview</h3>
-								<p>{overview}</p>
-							</div>
-						)}
-
-						{isAuthenticated && (
-							<div className="movie-page__actions">
-								<button
-									className={`movie-page__watchlist-btn ${
-										inWatchlist ? "active" : ""
-									}`}
-									onClick={handleWatchlistToggle}
-								>
-									{inWatchlist ? <FaCheck /> : <FaPlus />}
-									{inWatchlist ? "In Watchlist" : "Add to Watchlist"}
-								</button>
-
-								<button
-									className={`movie-page__favorite-btn ${
-										inFavorites ? "active" : ""
-									}`}
-									onClick={handleFavoritesToggle}
-								>
-									{inFavorites ? <FaHeart /> : <FaRegHeart />}
-									{inFavorites ? "In Favorites" : "Add to Favorites"}
-								</button>
-							</div>
-						)}
-
-						{directors.length > 0 && (
-							<div className="movie-page__directors">
-								<h3>Director{directors.length > 1 ? "s" : ""}</h3>
-								<div className="movie-page__directors-list">
-									{directors.map((director) => (
-										<span key={director.id} className="movie-page__director">
-											{director.name}
+							{genres && genres.length > 0 && (
+								<div className="movie-hero__genres">
+									{genres.map((genre) => (
+										<span key={genre.id} className="movie-hero__genre">
+											{genre.name}
 										</span>
 									))}
 								</div>
-							</div>
-						)}
+							)}
 
-						{cast?.length > 0 && (
-							<div className="movie-page__cast">
-								<h3>Cast</h3>
-								<div className="movie-page__cast-list">
-									{cast.map((actor) => (
-										<div key={actor.id} className="movie-page__cast-item">
-											<div className="movie-page__cast-image">
-												{actor.profile_path ? (
-													<img
-														src={`${imageBaseUrl}/w185${actor.profile_path}`}
-														alt={actor.name}
-													/>
-												) : (
-													<div className="movie-page__cast-placeholder"></div>
-												)}
-											</div>
-											<div className="movie-page__cast-info">
-												<p className="movie-page__cast-name">{actor.name}</p>
-												{actor.character && (
-													<p className="movie-page__cast-character">
-														as {actor.character}
-													</p>
-												)}
-											</div>
-										</div>
+							{overview && <p className="movie-hero__overview">{overview}</p>}
+
+							<div className="movie-hero__actions">
+								<button className="btn btn-icon" onClick={scrollToPlayer}>
+									<FaPlay /> Watch Now
+								</button>
+
+								{trailer && (
+									<button
+										className="btn btn-secondary btn-icon"
+										onClick={() => setShowTrailer(true)}
+									>
+										<FaPlay /> Watch Trailer
+									</button>
+								)}
+
+								{isAuthenticated && (
+									<>
+										<button
+											className={`movie-hero__action-btn ${
+												inWatchlist ? "in-list" : ""
+											}`}
+											onClick={handleWatchlistToggle}
+											aria-label={
+												inWatchlist
+													? "Remove from watchlist"
+													: "Add to watchlist"
+											}
+										>
+											{inWatchlist ? <FaCheck /> : <FaPlus />}
+										</button>
+
+										<button
+											className={`movie-hero__action-btn ${
+												inFavorites ? "favorite" : ""
+											}`}
+											onClick={handleFavoritesToggle}
+											aria-label={
+												inFavorites
+													? "Remove from favorites"
+													: "Add to favorites"
+											}
+										>
+											{inFavorites ? <FaHeart /> : <FaRegHeart />}
+										</button>
+									</>
+								)}
+
+								<button
+									className="movie-hero__action-btn"
+									onClick={handleShare}
+									aria-label="Share"
+								>
+									<FaShareAlt />
+								</button>
+							</div>
+
+							{directors.length > 0 && (
+								<div className="movie-hero__director">
+									<span>Director: </span>
+									{directors.map((director, index) => (
+										<span key={director.id}>
+											{director.name}
+											{index < directors.length - 1 ? ", " : ""}
+										</span>
 									))}
 								</div>
-							</div>
-						)}
+							)}
+						</div>
 					</div>
 				</div>
-
-				{similar?.results?.length > 0 && (
-					<div className="movie-page__similar">
-						<h2>Similar Movies</h2>
-						<MediaGrid items={similar.results.slice(0, 6)} type="movie" />
-					</div>
-				)}
-
-				{recommendations?.results?.length > 0 && (
-					<div className="movie-page__recommendations">
-						<h2>You May Also Like</h2>
-						<MediaGrid
-							items={recommendations.results.slice(0, 6)}
-							type="movie"
-						/>
-					</div>
-				)}
 			</div>
+
+			{/* Movie Player Section */}
+			<div className="movie-player" ref={playerRef}>
+				<div className="container">
+					<div className="movie-player__header">
+						<h2 className="movie-player__title">Watch: {title}</h2>
+
+						<div className="movie-player__sources">
+							<button
+								className={`movie-player__source ${
+									source === "vidsrc" ? "active" : ""
+								}`}
+								onClick={() => setSource("vidsrc")}
+							>
+								VidSrc
+							</button>
+							<button
+								className={`movie-player__source ${
+									source === "2embed" ? "active" : ""
+								}`}
+								onClick={() => setSource("2embed")}
+							>
+								2Embed
+							</button>
+						</div>
+					</div>
+
+					<div className="movie-player__container">
+						<iframe
+							src={currentUrl}
+							allowFullScreen
+							title={title}
+							className="movie-player__iframe"
+						></iframe>
+					</div>
+				</div>
+			</div>
+
+			{/* Movie Details Section */}
+			<div className="movie-details" ref={detailsRef}>
+				<div className="container">
+					{/* Cast Section */}
+					{cast?.length > 0 && (
+						<div className="movie-cast">
+							<h2 className="section-title">Cast</h2>
+							<div className="movie-cast__grid">
+								{cast.map((actor) => (
+									<div key={actor.id} className="movie-cast__item">
+										<div className="movie-cast__image">
+											{actor.profile_path ? (
+												<img
+													src={`${imageBaseUrl}/w185${actor.profile_path}`}
+													alt={actor.name}
+												/>
+											) : (
+												<div className="movie-cast__placeholder">
+													{actor.name.charAt(0)}
+												</div>
+											)}
+										</div>
+										<div className="movie-cast__info">
+											<h4 className="movie-cast__name">{actor.name}</h4>
+											{actor.character && (
+												<p className="movie-cast__character">
+													{actor.character}
+												</p>
+											)}
+										</div>
+									</div>
+								))}
+							</div>
+						</div>
+					)}
+
+					{/* Similar Movies Section */}
+					{similar?.results?.length > 0 && (
+						<MediaGrid
+							items={similar.results.slice(0, 12)}
+							type="movie"
+							title="Similar Movies"
+						/>
+					)}
+
+					{/* Recommendations Section */}
+					{recommendations?.results?.length > 0 && (
+						<MediaGrid
+							items={recommendations.results.slice(0, 12)}
+							type="movie"
+							title="You May Also Like"
+						/>
+					)}
+				</div>
+			</div>
+
+			{/* Trailer Modal */}
+			{showTrailer && trailer && (
+				<div className="trailer-modal">
+					<div
+						className="trailer-modal__backdrop"
+						onClick={() => setShowTrailer(false)}
+					></div>
+					<div className="trailer-modal__content">
+						<button
+							className="trailer-modal__close"
+							onClick={() => setShowTrailer(false)}
+							aria-label="Close trailer"
+						>
+							&times;
+						</button>
+						<iframe
+							src={`https://www.youtube.com/embed/${trailer.key}?autoplay=1`}
+							title={`${title} Trailer`}
+							frameBorder="0"
+							allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+							allowFullScreen
+							className="trailer-modal__iframe"
+						></iframe>
+					</div>
+				</div>
+			)}
 		</div>
 	);
 };
