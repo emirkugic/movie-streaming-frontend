@@ -154,29 +154,6 @@ const EpisodePage = () => {
 				</h1>
 			</div>
 
-			{/* Debug info - only in development */}
-			{process.env.NODE_ENV === "development" && (
-				<div
-					style={{
-						padding: "10px",
-						margin: "0 0 15px 0",
-						background: "#333",
-						fontSize: "12px",
-						fontFamily: "monospace",
-						borderRadius: "4px",
-					}}
-				>
-					<p>Debug - URL Path: {location.pathname}</p>
-					<p>Params: {JSON.stringify(params)}</p>
-					<p>
-						Parsed: Slug={slug}, ShowID={tvShowId}, Season={sNum}, Episode=
-						{eNum}
-					</p>
-					<p>Current Source: {source}</p>
-					<p>Current URL: {getVideoUrl(source)}</p>
-				</div>
-			)}
-
 			{/* Source selector */}
 			<div
 				style={{
