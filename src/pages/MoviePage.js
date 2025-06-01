@@ -114,9 +114,22 @@ const MoviePage = () => {
 				<div className="movie-page__overlay"></div>
 			</div>
 
-			<div className="movie-page__content">
+			<div className="movie-page__video-container">
 				<div className="movie-page__video-container">
-					<VideoPlayer sources={sources} type="movie" id={currentMovie.id} />
+					<VideoPlayer
+						sources={
+							sources || {
+								vidsrc: `https://vidsrc.xyz/embed/movie/${
+									currentMovie.id || ""
+								}`,
+								"2embed": `https://www.2embed.cc/embed/movie/${
+									currentMovie.id || ""
+								}`,
+							}
+						}
+						type="movie"
+						id={currentMovie.id}
+					/>
 				</div>
 
 				<div className="movie-page__info">

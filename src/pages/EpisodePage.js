@@ -61,7 +61,20 @@ const EpisodePage = () => {
 			</div>
 
 			<div className="episode-page__video-container">
-				<VideoPlayer sources={sources} type="episode" id={episode.id} />
+				<VideoPlayer
+					sources={
+						sources || {
+							vidsrc: `https://vidsrc.xyz/embed/tv?tmdb=${
+								tv_show.id || ""
+							}&season=${sNum || 1}&episode=${eNum || 1}`,
+							"2embed": `https://www.2embed.cc/embed/tv?tmdb=${
+								tv_show.id || ""
+							}&s=${sNum || 1}&e=${eNum || 1}`,
+						}
+					}
+					type="episode"
+					id={episode.id}
+				/>
 			</div>
 
 			<div className="episode-page__navigation">

@@ -20,6 +20,7 @@ const VideoPlayer = ({ sources, type, id }) => {
 	const [currentSource, setCurrentSource] = useState("vidsrc");
 	const [showControls, setShowControls] = useState(true);
 	const [loading, setLoading] = useState(true);
+	const [hasError, setHasError] = useState(false);
 
 	const { isAuthenticated } = useSelector((state) => state.auth);
 	const dispatch = useDispatch();
@@ -27,6 +28,27 @@ const VideoPlayer = ({ sources, type, id }) => {
 	const playerRef = useRef(null);
 	const playerContainerRef = useRef(null);
 	const controlsTimeoutRef = useRef(null);
+
+	// Check if sources is defined and properly formatted
+	const validSources =
+		sources && typeof sources === "object" && Object.keys(sources).length > 0;
+
+	// Default source URLs if none are provided
+	const defaultSources = {
+		vidsrc: "https://example.com/placeholder", // A placeholder URL
+		"2embed": "https://example.com/placeholder2",
+	};
+
+	// Use default sources if no valid sources are provided
+	const videoSources = validSources ? sources : defaultSources;
+
+	// Ensure currentSource exists in sources
+	useEffect(() => {
+		if (validSources && !videoSources[currentSource]) {
+			// Set to the first available source if current isn't available
+			setCurrentSource(Object.keys(videoSources)[0]);
+		}
+	}, [validSources, videoSources, currentSource]);
 
 	useEffect(() => {
 		// Hide controls after inactivity
@@ -81,6 +103,7 @@ const VideoPlayer = ({ sources, type, id }) => {
 
 	const handlePlay = () => {
 		setPlaying(true);
+		setHasError(false);
 	};
 
 	const handlePause = () => {
@@ -108,7 +131,9 @@ const VideoPlayer = ({ sources, type, id }) => {
 	const handleSeek = (e) => {
 		const seekTime = parseFloat(e.target.value);
 		setProgress(seekTime);
-		playerRef.current.seekTo(seekTime);
+		if (playerRef.current) {
+			playerRef.current.seekTo(seekTime);
+		}
 	};
 
 	const handleFullScreen = () => {
@@ -118,7 +143,11 @@ const VideoPlayer = ({ sources, type, id }) => {
 			if (document.fullscreenElement) {
 				document.exitFullscreen();
 			} else {
-				playerContainer.requestFullscreen();
+				playerContainer.requestFullscreen().catch((err) => {
+					console.error(
+						`Error attempting to enable fullscreen: ${err.message}`
+					);
+				});
 			}
 		}
 	};
@@ -140,6 +169,8 @@ const VideoPlayer = ({ sources, type, id }) => {
 	};
 
 	const formatTime = (seconds) => {
+		if (typeof seconds !== "number" || isNaN(seconds)) return "00:00";
+
 		const hours = Math.floor(seconds / 3600);
 		const minutes = Math.floor((seconds % 3600) / 60);
 		const secs = Math.floor(seconds % 60);
@@ -153,41 +184,67 @@ const VideoPlayer = ({ sources, type, id }) => {
 			.join(":");
 	};
 
-	const handleSourceChange = (source) => {
-		setCurrentSource(source);
+	const handleSourceChange = (e) => {
+		setCurrentSource(e.target.value);
 		setLoading(true);
+		setHasError(false);
+	};
+
+	const handleError = (e) => {
+		console.error("Video playback error:", e);
+		setLoading(false);
+		setHasError(true);
 	};
 
 	return (
 		<div className="video-player" ref={playerContainerRef}>
-			<ReactPlayer
-				ref={playerRef}
-				url={sources[currentSource]}
-				playing={playing}
-				volume={volume}
-				muted={muted}
-				width="100%"
-				height="100%"
-				onPlay={handlePlay}
-				onPause={handlePause}
-				onProgress={handleProgress}
-				onDuration={handleDuration}
-				onBuffer={() => setLoading(true)}
-				onBufferEnd={() => setLoading(false)}
-				onReady={() => setLoading(false)}
-				config={{
-					file: {
-						attributes: {
-							crossOrigin: "anonymous",
+			{/* Conditionally render message for no valid sources */}
+			{!validSources && (
+				<div className="video-player__error-message">
+					<p>No video sources available for this content.</p>
+					<p>Please try another title or check back later.</p>
+				</div>
+			)}
+
+			{/* Only render the player if we have valid sources */}
+			{validSources && (
+				<ReactPlayer
+					ref={playerRef}
+					url={videoSources[currentSource]}
+					playing={playing}
+					volume={volume}
+					muted={muted}
+					width="100%"
+					height="100%"
+					onPlay={handlePlay}
+					onPause={handlePause}
+					onProgress={handleProgress}
+					onDuration={handleDuration}
+					onBuffer={() => setLoading(true)}
+					onBufferEnd={() => setLoading(false)}
+					onReady={() => setLoading(false)}
+					onError={handleError}
+					config={{
+						file: {
+							attributes: {
+								crossOrigin: "anonymous",
+							},
 						},
-					},
-				}}
-				style={{ position: "absolute", top: 0, left: 0 }}
-			/>
+					}}
+					style={{ position: "absolute", top: 0, left: 0 }}
+				/>
+			)}
 
 			{loading && (
 				<div className="video-player__loader">
 					<div className="video-player__spinner"></div>
+				</div>
+			)}
+
+			{hasError && (
+				<div className="video-player__error">
+					<p>Error loading video from this source.</p>
+					<p>Please try another source or check your connection.</p>
 				</div>
 			)}
 
@@ -197,8 +254,8 @@ const VideoPlayer = ({ sources, type, id }) => {
 						<input
 							type="range"
 							min={0}
-							max={duration}
-							value={progress}
+							max={duration || 1}
+							value={progress || 0}
 							onChange={handleSeek}
 							className="video-player__progress-bar"
 						/>
@@ -243,11 +300,20 @@ const VideoPlayer = ({ sources, type, id }) => {
 							<div className="video-player__source-selector">
 								<select
 									value={currentSource}
-									onChange={(e) => handleSourceChange(e.target.value)}
+									onChange={handleSourceChange}
 									className="video-player__source-select"
 								>
-									<option value="vidsrc">Source 1 (VidSrc)</option>
-									<option value="2embed">Source 2 (2Embed)</option>
+									{validSources &&
+										Object.keys(videoSources).map((source) => (
+											<option key={source} value={source}>
+												Source:{" "}
+												{source === "vidsrc"
+													? "VidSrc"
+													: source === "2embed"
+													? "2Embed"
+													: source}
+											</option>
+										))}
 								</select>
 							</div>
 
